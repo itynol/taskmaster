@@ -1,9 +1,5 @@
-#include <stdio.h>
-#include <sys/socket.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include "task_master.h"
+#include "../../task_master.h"
+
 
 static char		*msg_status(t_pars *listm)
 {

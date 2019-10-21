@@ -20,12 +20,12 @@ char	*ft_strmap(char const *s, char (*f)(char))
 	i = 0;
 	if (s == NULL)
 		return (NULL);
-	while (s[i] != '\0' && s[i] >= 0 && s[i] <= 127)
+	while (s[i] != '\0')
 		i++;
 	if (!(str = (char*)malloc(i + 1)))
 		return (NULL);
 	i = 0;
-	while (s[i] != '\0' && s[i] >= 0 && s[i] <= 127)
+	while (s[i] != '\0')
 	{
 		str[i] = (*f)(s[i]);
 		i++;

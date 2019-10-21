@@ -17,7 +17,7 @@ char	*ft_strchr(const char *str, int ch)
 	char *str1;
 
 	str1 = (char*)str;
-	while (*str1 != '\0' && *str1 >= 0 && *str1 <= 127)
+	while (*str1 != '\0')
 	{
 		if (*str1 == ch)
 			return (str1);

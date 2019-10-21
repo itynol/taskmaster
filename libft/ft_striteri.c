@@ -18,7 +18,7 @@ void	ft_striteri(char *s, void (*f)(unsigned int, char*))
 
 	i = 0;
 	if (s != NULL && f != NULL)
-		while (s[i] != '\0' && s[i] >= 0 && s[i] <= 127)
+		while (s[i] != '\0')
 		{
 			(*f)(i, &s[i]);
 			i++;

@@ -21,7 +21,7 @@ char	*ft_strrchr(const char *str, int ch)
 	i = 0;
 	k = 0;
 	str1 = (char*)str;
-	while (str1[i] != '\0' && str1[i] >= 0 && str1[i] <= 127)
+	while (str1[i] != '\0')
 	{
 		if (str1[i] == ch)
 			k = i;

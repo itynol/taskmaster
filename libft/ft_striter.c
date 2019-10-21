@@ -15,7 +15,7 @@
 void	ft_striter(char *s, void (*f)(char*))
 {
 	if (s != NULL && f != NULL)
-		while (*s != '\0' && *s >= 0 && *s <= 127)
+		while (*s != '\0')
 		{
 			(*f)(s);
 			s++;

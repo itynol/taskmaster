@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <readline/readline.h>
-#include "task_master.h"
+#include "../../task_master.h"
 
 int			msg_hendler(char *msg)
 {
@@ -34,7 +34,6 @@ int main()
 	char			*msg;
 	char			buf[1024];
 	int				i;
-	int t;
 
 	i = -1;
 	lol.sa_family = AF_UNIX;

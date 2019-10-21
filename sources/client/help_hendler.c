@@ -10,10 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "task_master.h"
+#include "../../task_master.h"
 
 int					help_hendler(int words)
 {
+	words -= 1;
 	ft_putstr("\ndefault commands:\n=========================\n");
 	ft_putstr("start\t\texit\t\tadd\nstop\t\tshutdown\tremove");
 	ft_putstr("restart\t\thelp\t\tstatus\nreserv");

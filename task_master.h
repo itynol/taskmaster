@@ -18,6 +18,12 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <signal.h>
+#include <sys/wait.h>
+#include <stdio.h>
+#include <sys/socket.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
 
 # define BUFF_SIZE 1
 
@@ -41,7 +47,6 @@ typedef struct		s_pars
 }					t_pars;
 
 t_pars		*list;
-
 
 int			get_next_line(const int fd, char **line);
 int			ft_server_listner();
