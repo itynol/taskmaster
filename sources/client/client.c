@@ -16,7 +16,7 @@ int			msg_hendler(char *msg)
 			!(ft_strcmp(msg, "restart")) ||
 			!(ft_strcmp(msg, "start")) ||
 			!(ft_strcmp(msg, "stop")) ||
-			!(ft_strcmp(msg, "reserv")) ||
+			!(ft_strcmp(msg, "reboot")) ||
 			!(ft_strcmp(msg, "shutdown")))
 		return(1);
 	else if (!(ft_strcmp(msg, "help")))
@@ -29,16 +29,16 @@ int			msg_hendler(char *msg)
 int main()
 {
 	int				fds;
-	struct sockaddr	lol;
-	char			*adr = "./lol";
+	struct sockaddr	mysocket;
+	char			*adr = "./mysocket";
 	char			*msg;
 	char			buf[1024];
 	int				i;
 
 	i = -1;
-	lol.sa_family = AF_UNIX;
+	mysocket.sa_family = AF_UNIX;
 	while (adr[++i])
-		lol.sa_data[i] = adr[i];
+		mysocket.sa_data[i] = adr[i];
 	while (1)
 	{
 		msg = readline(">");
@@ -48,7 +48,7 @@ int main()
 		else if (i == 1)
 		{
 			fds = socket(AF_UNIX, SOCK_STREAM, 0);
-			connect(fds, &lol, 8);
+			connect(fds, &mysocket, 8);
 			if (send(fds, msg, 8, 0) < 0)
 				write(1, "server error\n", 13);
 			recv(fds, buf, 1024, 0);	
@@ -57,7 +57,7 @@ int main()
 			free(msg);
 		}
 		else if (i != 2)
-			write(1, "command not found\n", 18);
+			write(1, "command not found, try:help\n", 28);
 	}
 	free(msg);
 	close(fds);

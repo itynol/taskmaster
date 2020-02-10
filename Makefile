@@ -15,11 +15,10 @@ NAME_SRV = taskmaster
 NAME_CLN = client
 FLAGS = -Wall -Wextra -Werror
 
-SRCS_DIR=sources
 OBJS_DIR=objects
 
-SRV_DIR=server
-CLN_DIR=client
+SRV_DIR=sources/server
+CLN_DIR=sources/client
 
 SRCS_SRV = main.c get_next_line.c server.c start.c parser.c
 SRCS_CLN = client.c help_hendler.c
@@ -34,18 +33,14 @@ INCLUDES = task_master.h
 
 all:	$(NAME)
 
-$(NAME):	$(OBJS_CLN) $(OBJS_SRV)
+$(NAME):
 			@echo "Compilation..."
 			@make --directory ./libft
-			@gcc -g $(FLAGS) $(OBJS_SRV) -o $(NAME_SRV) -L ./libft -lft 
-			@gcc -g $(FLAGS) $(OBJS_CLN) -o $(NAME_CLN) -L ./libft -lft  -lreadline
+			@gcc -g $(FLAGS) $(SOURCES_S) -o $(NAME_SRV) -L ./libft -lft 
+			@gcc -g $(FLAGS) $(SOURCES_C) -o $(NAME_CLN) -L ./libft -lft  -lreadline
 			@echo "Your ./taskmaster is ready"
 
-$(OBJS_CLN)	:	$(OBJS_DIR)/$(CLN_DIR)/%.o: $(SRCS_DIR)/$(CLN_DIR)/%.c
-			@gcc $(FLAGS) -c -g $<  -o $@
 
-$(OBJS_SRV)	:	$(OBJS_DIR)/$(SRV_DIR)/%.o: $(SRCS_DIR)/$(SRV_DIR)/%.c
-			@gcc $(FLAGS) -c -g $<  -o $@
 
 clean:
 			@echo "\033[34mDeliting o-files\033[34m"

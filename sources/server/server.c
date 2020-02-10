@@ -10,19 +10,20 @@ static char		*msg_status(t_pars *listm)
 		msg = ft_strnew(0);
 	while(listm)
 	{
-		tmp = ft_strrejoin(listm->name, ft_itoa(listm->PID), 2);
+		tmp = ft_strrejoin(listm->name, "\t", 0);
+		tmp = ft_strrejoin(tmp, ft_itoa(listm->PID), 3);
 		if (listm->status == 1)  // online monitor
-			tmp = ft_strrejoin(tmp, "     WORK\n", 1);
+			tmp = ft_strrejoin(tmp, "\t\tWORK\n", 1);
 		else if (listm->status == 0)
-			tmp = ft_strrejoin(tmp, "     END\n", 1);
+			tmp = ft_strrejoin(tmp, "\t\tEND\n", 1);
 		else if (listm->status == -1)
-			tmp = ft_strrejoin(tmp, "     CANT OPEN DIR\n", 1);
+			tmp = ft_strrejoin(tmp, "\t\tCANT OPEN DIR\n", 1);
 		else if (listm->status == -2)
-			tmp = ft_strrejoin(tmp, "     NOT FOUND\n", 1);
+			tmp = ft_strrejoin(tmp, "\t\tNOT FOUND\n", 1);
 		else if (listm->status == -3)
-			tmp = ft_strrejoin(tmp, "     CAT OPEN FILE\n", 1);
+			tmp = ft_strrejoin(tmp, "\t\tCAT OPEN FILE\n", 1);
 		else if (listm->status == 15 || listm->status == 9)
-			tmp = ft_strrejoin(tmp, "     WAS KILLED\n", 1)
+			tmp = ft_strrejoin(tmp, "\t\tWAS KILLED\n", 1)
 ;		msg = ft_strrejoin(msg, tmp, 3);
 		listm = listm->next;
 	}
@@ -43,9 +44,10 @@ static void	hendler(int sock, char *buf, int fds)
 	}
 	else if (ft_strcmp(tmp, "shutdown") == 0)
 	{
+		send(sock, NULL, 0, 0);
 		free(tmp);
 		close(fds);
-		remove("./lol");
+		remove("./mysocket");
 		exit(0);
 	}
 	else
@@ -61,17 +63,17 @@ static void	hendler(int sock, char *buf, int fds)
 int			ft_server_listner()
 {
 	int	fds, sock;
-	struct sockaddr lol;
-	char	*adr = "./lol";
+	struct sockaddr mysocket;
+	char	*adr = "./mysocket";
 	int		i;
 	char	buf[4096];
 
 	i = -1;
-	lol.sa_family = AF_UNIX;
+	mysocket.sa_family = AF_UNIX;
 	while (adr[++i])
-		lol.sa_data[i] = adr[i];
+		mysocket.sa_data[i] = adr[i];
 	fds = socket(AF_UNIX, SOCK_STREAM, 0);
-	i = bind(fds, &lol, 8);
+	i = bind(fds, &mysocket, 8);
 	listen(fds, 1);
 	while (1)
 	{
