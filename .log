@@ -1,0 +1,13 @@
+log_file connected with fd - 3
+first files stated...
+go to listner...
+socket created with fd - 5
+listner started - 0
+sock is accepted - 6
+I got command: "status"
+sock is accepted - 6
+I got command: "status"
+sock is accepted - 6
+I got command: "start asdf"
+sock is accepted - 6
+I got command: "shutdown"

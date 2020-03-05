@@ -20,6 +20,7 @@ static int			execut(char *path, char **env)
 	
 	i = 0;
 	tmp = ft_strsplit(path, ' ');
+	setpgid(getpid(),getpid());
 	i = execve(path, tmp, env);
 	return (i);
 }

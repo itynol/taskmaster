@@ -1,5 +1,6 @@
 #include "../../task_master.h"
 
+extern int log_fd;
 
 static char		*msg_status(t_pars *listm)
 {
@@ -23,8 +24,8 @@ static char		*msg_status(t_pars *listm)
 		else if (listm->status == -3)
 			tmp = ft_strrejoin(tmp, "\t\tCAT OPEN FILE\n", 1);
 		else if (listm->status == 15 || listm->status == 9)
-			tmp = ft_strrejoin(tmp, "\t\tWAS KILLED\n", 1)
-;		msg = ft_strrejoin(msg, tmp, 3);
+			tmp = ft_strrejoin(tmp, "\t\tWAS KILLED\n", 1);
+					msg = ft_strrejoin(msg, tmp, 3);
 		listm = listm->next;
 	}
 	return (msg);
@@ -47,8 +48,12 @@ static void	hendler(int sock, char *buf, int fds)
 		send(sock, NULL, 0, 0);
 		free(tmp);
 		close(fds);
-		remove("./mysocket");
+		remove("./.mys");
 		exit(0);
+	}
+	else if (ft_strncmp(tmp, "start", 5) == 0)
+	{
+		printf ("%s\n",buf);
 	}
 	else
 	{
@@ -64,26 +69,27 @@ int			ft_server_listner()
 {
 	int	fds, sock;
 	struct sockaddr mysocket;
-	char	*adr = "./mysocket";
+	char	*adr = "./.mys";
 	int		i;
 	char	buf[4096];
 
+	remove("./.mys");
 	i = -1;
 	mysocket.sa_family = AF_UNIX;
 	while (adr[++i])
 		mysocket.sa_data[i] = adr[i];
 	fds = socket(AF_UNIX, SOCK_STREAM, 0);
+	dprintf(log_fd, "socket created with fd - %d\n", fds);
 	i = bind(fds, &mysocket, 8);
-	listen(fds, 1);
+	dprintf(log_fd, "listner started - %d\n", 	listen(fds, 1));
 	while (1)
 	{
 		sock = accept(fds, NULL, NULL);
-		i = recv(sock, buf, 8, 0);
+		dprintf(log_fd, "sock is accepted - %d\n", 	sock);
+		i = recv(sock, buf, 1024, 0);
+		dprintf (log_fd, "I got command: \"%s\"\n", buf);
 		if (i > 0)
-		{
-			printf ("git it\n");
 			hendler(sock, buf, fds);
-		}
 		sleep(1);
 		close(sock);
 	}

@@ -46,6 +46,7 @@ typedef struct		s_pars
 	struct s_pars	*next;
 }					t_pars;
 
+int 		log_fd;
 t_pars		*list;
 
 int			get_next_line(const int fd, char **line);

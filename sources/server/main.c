@@ -12,6 +12,8 @@
 
 #include "../../task_master.h"
 
+extern int log_fd;
+
 void		config_reader(char **av, char **env)
 {
 	int		fd;
@@ -33,7 +35,9 @@ void		config_reader(char **av, char **env)
 			parser_mth(fd, ft_strdup(buf));
 		free(buf);
 	}
+	dprintf(log_fd, "first files stated...\n");
 	start(env, list);
+	dprintf(log_fd, "go to listner...\n");
 	ft_server_listner();
 }
 
@@ -57,6 +61,8 @@ void		signals(int signal)
 
 int		 main(int ac, char **av, char **env)
 {
+	log_fd = open(".log", O_RDWR | O_CREAT | S_IRUSR);
+	dprintf(log_fd, "log_file connected with fd - %d\n", log_fd);
 	signal(SIGCHLD, signals);
 	if (ac < 2)
 		write(1, "Please select conf file\n", 25);
