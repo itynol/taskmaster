@@ -35,10 +35,10 @@ int main()
 	char			buf[1024];
 	int				i;
 
-	i = -1;
-	lol.sa_family = AF_UNIX;
-	while (adr[++i])
-		lol.sa_data[i] = adr[i];
+    i = -1;
+    lol.sa_family = AF_UNIX;
+    while (adr[++i])
+        lol.sa_data[i] = adr[i];
 	while (1)
 	{
 		msg = readline(">");
