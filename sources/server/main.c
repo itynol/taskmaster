@@ -17,7 +17,7 @@ void		config_reader(char **av, char **env)
 	int		fd;
 	char	*buf;
 	int g;
-
+ //hello mothered
 	g = 0;
 	list = NULL;
 	buf = NULL;
