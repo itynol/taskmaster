@@ -3,34 +3,69 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: dwisoky <marvin@42.fr>                     +#+  +:+       +#+         #
+#    By: ggwin-go <ggwin-go@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2018/11/24 18:08:38 by dwisoky           #+#    #+#              #
-#    Updated: 2019/06/06 18:21:45 by jterry           ###   ########.fr        #
+#    Created: 2018/11/20 21:55:04 by ggwin-go          #+#    #+#              #
+#    Updated: 2019/09/29 15:06:05 by ggwin-go         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = libft.a 
-SRC = ft_memset.c ft_bzero.c ft_memcpy.c ft_memccpy.c ft_memmove.c ft_memchr.c ft_memcmp.c ft_strlen.c ft_strdup.c ft_strcpy.c ft_strncpy.c \
-	  ft_strcat.c ft_strncat.c ft_strlcat.c ft_strchr.c ft_strrchr.c ft_strstr.c ft_strnstr.c ft_strcmp.c ft_strncmp.c ft_atoi.c \
-	  ft_isalpha.c ft_isdigit.c ft_isalnum.c ft_isascii.c ft_isprint.c ft_toupper.c ft_tolower.c \
-	  ft_memalloc.c ft_memdel.c ft_strnew.c ft_strdel.c ft_strclr.c ft_striter.c ft_striteri.c ft_strmap.c ft_strmapi.c \
-	  ft_strequ.c ft_strnequ.c ft_strsub.c ft_strjoin.c ft_strtrim.c ft_strsplit.c ft_itoa.c ft_putchar.c ft_putstr.c \
-	  ft_putendl.c ft_putnbr.c ft_putchar_fd.c ft_putstr_fd.c ft_putendl_fd.c ft_putnbr_fd.c ft_lstnew.c ft_lstadd.c ft_strrejoin.c ft_putstr_nb.c ft_putstr_bf.c ft_strdupn.c
-OBJ = $(SRC:.c=.o)
-FLAG = -Wall -Wextra -Werror
+NAME=libft.a
+
+CC=clang
+FLAGS=-Wall -Wextra -Werror -MMD
+FLAGS+=-g
+
+RED=\033[0;31m
+GREEN=\033[0;32m
+BLUE=\033[1;34m
+NC=\033[0m
+
+include libft_dependences.mk
+
+NAME_CLEAN=$(strip $(NAME))
+
+LIBFT_OBJS_SUBDIRS=$(LIBFT_OBJS_DIR)\
+	$(LIBFT_OBJS_DIR)/$(LIBFT_MEM_DIR)\
+	$(LIBFT_OBJS_DIR)/$(LIBFT_STR_DIR)\
+	$(LIBFT_OBJS_DIR)/$(LIBFT_OUTPUT_DIR)\
+	$(LIBFT_OBJS_DIR)/$(FT_PRINTF_DIR)\
+	$(LIBFT_OBJS_DIR)/$(FT_STRING_DIR)\
+	$(LIBFT_OBJS_DIR)/$(FT_VECTOR_DIR)\
+	$(LIBFT_OBJS_DIR)/$(LIBFT_LIST_DIR)\
+	$(LIBFT_OBJS_DIR)/$(LIBFT_DLIST_DIR)
 
 all: $(NAME)
 
-$(NAME):
-	@gcc $(FLAG) -c $(SRC)
-	@ar rc $(NAME) $(OBJ)
+$(NAME): $(LIBFT_OBJS_SUBDIRS) $(LIBFT_OBJS)
+	@printf "$(BLUE)Compiling $(NAME) objects files...$(NC)\n"
+	@ar rc $(NAME) $(LIBFT_OBJS)
 	@ranlib $(NAME)
+	@printf "$(GREEN)Bin $(NAME) is ready to use!$(NC)\n"
+
+$(LIBFT_OBJS_SUBDIRS):
+	@mkdir -p $@
+
+$(LIBFT_OBJS_DIR)/%.o: $(LIBFT_SRCS_DIR)/%.c# $(LIBFT_HEADERS)
+	@$(CC) $(FLAGS) $(LIBFT_INCLUDES) -c $< -o $@
 
 clean:
-	@rm -f *.o
+ifneq ($(LIBFT_OBJS_CLEAN),)
+	@rm -rf $(LIBFT_OBJS_DIR)
+	@printf "$(RED)$(NAME) objects files removed.$(NC)\n"
+else
+	@printf "$(RED)$(NAME) objects already cleaned$(NC)\n"
+endif
 
 fclean: clean
-	@rm -f $(NAME)
+ifneq ($(NAME),)
+	@rm -rf $(LIBFT_OBJS_DIR)
+	@rm -rf $(NAME)
+	@printf "$(RED)Bin $(NAME) removed.$(NC)\n"
+else
+	@printf "$(RED)Objects and bin $(NAME) already cleaned$(NC)\n"
+endif
 
 re: fclean all
+
+.PHONY: all clean fclean re
