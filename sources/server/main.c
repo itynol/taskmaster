@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../task_master.h"
+#include "task_master.h"
 
 void		config_reader(char **av, char **env)
 {

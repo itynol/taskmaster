@@ -1,4 +1,4 @@
-#include "../../task_master.h"
+#include "task_master.h"
 
 
 static char		*msg_status(t_pars *listm)

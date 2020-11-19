@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <readline/readline.h>
-#include "../../task_master.h"
+#include "task_master.h"
 
 int			msg_hendler(char *msg)
 {
