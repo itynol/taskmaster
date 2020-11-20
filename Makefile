@@ -42,8 +42,8 @@ all:	$(NAME)
 $(NAME):	$(LIBFT_A) obj_subdir $(OBJS_CLN) $(OBJS_SRV)
 			@echo "Compilation..."
 			@make --directory ./libft
-			@gcc -g $(FLAGS) $(INCLUDES) $(LIBFT_A) $(OBJS_SRV) -o $(NAME_SRV) 
-			@gcc -g $(FLAGS) $(INCLUDES) $(LIBFT_A) $(OBJS_CLN) -o $(NAME_CLN) -lreadline
+			@gcc -g $(FLAGS) $(OBJS_SRV) -o $(NAME_SRV) $(INCLUDES) $(LIBFT_A)
+			@gcc -g $(FLAGS) $(OBJS_CLN) -o $(NAME_CLN) $(INCLUDES) $(LIBFT_A) -lreadline
 			@echo "Your ./taskmaster is ready"
 
 $(OBJS_CLN)	:	$(OBJS_DIR)/$(CLN_DIR)/%.o: $(SRCS_DIR)/$(CLN_DIR)/%.c
@@ -66,7 +66,7 @@ clean:
 			
 fclean:	clean
 			@echo "\033[34mDeliting binary\033[34m"
-			@/bin/rm -f $(NAME_CLN) $(NAME_SRV)
+			@/bin/rm -f $(NAME_CLN) $(NAME_SRV) $(SOCKET_ADDR)
 			@make fclean -C $(LIBFT_DIR)
 
 re:	fclean all

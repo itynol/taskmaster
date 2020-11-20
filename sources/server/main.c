@@ -10,15 +10,14 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+# define EX
 #include "task_master.h"
 
 void		config_reader(char **av, char **env)
 {
 	int		fd;
 	char	*buf;
-	int g;
 
-	g = 0;
 	list = NULL;
 	buf = NULL;
 	if ((fd = open(av[1], O_RDONLY)) < 0)
@@ -45,22 +44,28 @@ void		signals(int signal)
 	int siglog;
 	t_pars	*first;
 
-	first = list;
-	if (signal == SIGCHLD)
-	{
+    if (signal == SIGCHLD)
+    {
+        first = list;
 		tmp = wait(&siglog);
 		while(tmp != list->PID && list)
 			list = list->next;
 		if (list->PID == tmp)
 			list->status = (short int)siglog;
-	}
-	list = first;
+	    list = first;
+	} else if (signal == SIGQUIT)
+    {
+        printf ("Quit (core dumped)\n");
+        remove(SOCKET_ADDRESS);
+        exit(0);
+    }
 }
 
 int		 main(int ac, char **av, char **env)
 {
 	signal(SIGCHLD, signals);
-	if (ac < 2)
+    signal(SIGQUIT, signals);
+    if (ac < 2)
 		write(1, "Please select conf file\n", 25);
 	else if (ac > 2)
 		write(1, "So many args\n", 14);

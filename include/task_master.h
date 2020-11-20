@@ -26,6 +26,7 @@
 #include <string.h>
 
 # define BUFF_SIZE 1
+# define SOCKET_ADDRESS "tm_s"
 
 typedef struct		s_pars
 {
@@ -46,7 +47,10 @@ typedef struct		s_pars
 	struct s_pars	*next;
 }					t_pars;
 
-t_pars		*list;
+#ifndef EX
+# define EX extern
+#endif
+EX t_pars *list;
 
 int			ft_server_listner();
 void		start(char **env, t_pars *list_start);

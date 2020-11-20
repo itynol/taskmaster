@@ -1,29 +1,28 @@
 #include "task_master.h"
 
-
 static char		*msg_status(t_pars *listm)
 {
-	char	*tmp;
+	char	*tmpMsg;
 	char	*msg;
 
 	if (listm)
 		msg = ft_strnew(0);
 	while(listm)
 	{
-		tmp = ft_strrejoin(listm->name, ft_itoa(listm->PID), 2);
+		tmpMsg = ft_strrejoin(listm->name, ft_itoa(listm->PID), 2);
 		if (listm->status == 1)  // online monitor
-			tmp = ft_strrejoin(tmp, "     WORK\n", 1);
+			tmpMsg = ft_strrejoin(tmpMsg, "\t\tWORK\n", 1);
 		else if (listm->status == 0)
-			tmp = ft_strrejoin(tmp, "     END\n", 1);
+			tmpMsg = ft_strrejoin(tmpMsg, "\t\tEND\n", 1);
 		else if (listm->status == -1)
-			tmp = ft_strrejoin(tmp, "     CANT OPEN DIR\n", 1);
+			tmpMsg = ft_strrejoin(tmpMsg, "\t\tCANT OPEN DIR\n", 1);
 		else if (listm->status == -2)
-			tmp = ft_strrejoin(tmp, "     NOT FOUND\n", 1);
+			tmpMsg = ft_strrejoin(tmpMsg, "\t\tNOT FOUND\n", 1);
 		else if (listm->status == -3)
-			tmp = ft_strrejoin(tmp, "     CAT OPEN FILE\n", 1);
+			tmpMsg = ft_strrejoin(tmpMsg, "\t\tCAT OPEN FILE\n", 1);
 		else if (listm->status == 15 || listm->status == 9)
-			tmp = ft_strrejoin(tmp, "     WAS KILLED\n", 1)
-;		msg = ft_strrejoin(msg, tmp, 3);
+			tmpMsg = ft_strrejoin(tmpMsg, "\t\tWAS KILLED\n", 1)
+;		msg = ft_strrejoin(msg, tmpMsg, 3);
 		listm = listm->next;
 	}
 	return (msg);
@@ -34,8 +33,7 @@ static void	hendler(int sock, char *buf, int fds)
 	char	*tmp;
 	char	*msg;
 
-	fds = 1;
-	tmp = ft_strtrim(buf);
+	tmp = ft_strdup(buf);
 	if (ft_strcmp(tmp, "status") == 0)
 	{
 		msg = msg_status(list);
@@ -45,7 +43,7 @@ static void	hendler(int sock, char *buf, int fds)
 	{
 		free(tmp);
 		close(fds);
-		remove("./lol");
+		remove(SOCKET_ADDRESS);
 		exit(0);
 	}
 	else
@@ -60,20 +58,25 @@ static void	hendler(int sock, char *buf, int fds)
 
 int			ft_server_listner()
 {
-	int	fds, sock;
-	struct sockaddr lol;
-	char	*adr = "./lol";
-	int		i;
+	int	fds, sock, i, listenStatus;
+	struct sockaddr sockAddress;
+	char	*pathToSocket = SOCKET_ADDRESS;
 	char	buf[4096];
 
 	i = -1;
-	lol.sa_family = AF_UNIX;
-	while (adr[++i])
-		lol.sa_data[i] = adr[i];
+    sockAddress.sa_family = AF_UNIX;
+	while (pathToSocket[++i])
+		sockAddress.sa_data[i] = pathToSocket[i];
+    sockAddress.sa_data[i] = '\0';
 	fds = socket(AF_UNIX, SOCK_STREAM, 0);
-	i = bind(fds, &lol, 8);
-	listen(fds, 1);
-	while (1)
+	i = bind(fds, &sockAddress, 8);
+    listenStatus = listen(fds, 1);
+	printf("Hello, your taskmaster has started:"
+        "\nfds - %d"
+        "\nbind - %d"
+        "\nlistenStatus - %d"
+        "\nsockAddress - %s\n", fds, i, listenStatus, sockAddress.sa_data);
+    while (1)
 	{
 		sock = accept(fds, NULL, NULL);
 		i = recv(sock, buf, 8, 0);

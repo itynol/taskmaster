@@ -6,7 +6,7 @@
 #include <readline/readline.h>
 #include "task_master.h"
 
-int			msg_hendler(char *msg)
+int			msgHendler(char *msg)
 {
 	if (ft_strcmp(msg, "exit") == 0)
 		return (-1);
@@ -28,37 +28,40 @@ int			msg_hendler(char *msg)
 
 int main()
 {
-	int				fds;
-	struct sockaddr	lol;
-	char			*adr = "./lol";
-	char			*msg;
+	int				fds, i;
+	struct sockaddr	sockAddress;
+	char			*pathToSocket = SOCKET_ADDRESS;
+	char			*msg, *rawMsg;
 	char			buf[1024];
-	int				i;
 
     i = -1;
-    lol.sa_family = AF_UNIX;
-    while (adr[++i])
-        lol.sa_data[i] = adr[i];
+    sockAddress.sa_family = AF_UNIX;
+    while (pathToSocket[++i]) {
+        sockAddress.sa_data[i] = pathToSocket[i];
+    }
+    sockAddress.sa_data[i] = '\0';
 	while (1)
 	{
-		msg = readline(">");
-		i = msg_hendler(msg);
+		rawMsg = readline(">");
+		msg = ft_strtrim(rawMsg);
+		free(rawMsg);
+		i = msgHendler(msg);
 		if (i < 0)
 			break ;
 		else if (i == 1)
 		{
 			fds = socket(AF_UNIX, SOCK_STREAM, 0);
-			connect(fds, &lol, 8);
-			if (send(fds, msg, 8, 0) < 0)
-				write(1, "server error\n", 13);
-			recv(fds, buf, 1024, 0);	
+			connect(fds, &sockAddress, 8);
+			if ((i = send(fds, msg, 8, 0)) < 0)
+			    printf("server error - code: %d\n", i);
+			recv(fds, buf, 1024, 0);
 			printf ("%s", buf);
 			ft_bzero(buf, 1024);
-			free(msg);
 		}
 		else if (i != 2)
 			write(1, "command not found\n", 18);
-	}
+        free(msg);
+    }
 	free(msg);
 	close(fds);
 	return (0);
