@@ -12,7 +12,6 @@
 
 #include "../../task_master.h"
 
-
 static int			execut(char *path, char **env)
 {
 	char	**tmp;

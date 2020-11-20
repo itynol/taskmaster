@@ -46,7 +46,10 @@ typedef struct		s_pars
 	struct s_pars	*next;
 }					t_pars;
 
-t_pars		*list;
+#ifndef EX
+# define EX extern
+#endif
+EX t_pars *list;
 
 int			get_next_line(const int fd, char **line);
 int			ft_server_listner();

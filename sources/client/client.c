@@ -6,7 +6,7 @@
 #include <readline/readline.h>
 #include "../../task_master.h"
 
-int			msg_hendler(char *msg)
+int			msgHendler(char *msg)
 {
 	if (ft_strcmp(msg, "exit") == 0)
 		return (-1);
@@ -29,26 +29,26 @@ int			msg_hendler(char *msg)
 int main()
 {
 	int				fds;
-	struct sockaddr	lol;
-	char			*adr = "./lol";
+	struct sockaddr	sockAddress;
+	char			*pathToSocket = "./lol";
 	char			*msg;
 	char			buf[1024];
 	int				i;
 
     i = -1;
-    lol.sa_family = AF_UNIX;
-    while (adr[++i])
-        lol.sa_data[i] = adr[i];
+    sockAddress.sa_family = AF_UNIX;
+    while (pathToSocket[++i])
+        sockAddress.sa_data[i] = pathToSocket[i];
 	while (1)
 	{
 		msg = readline(">");
-		i = msg_hendler(msg);
+		i = msgHendler(msg);
 		if (i < 0)
 			break ;
 		else if (i == 1)
 		{
 			fds = socket(AF_UNIX, SOCK_STREAM, 0);
-			connect(fds, &lol, 8);
+			connect(fds, &sockAddress, 8);
 			if (send(fds, msg, 8, 0) < 0)
 				write(1, "server error\n", 13);
 			recv(fds, buf, 1024, 0);	
