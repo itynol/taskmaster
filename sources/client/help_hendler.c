@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../task_master.h"
+#include "task_master.h"
 
 int					help_hendler(int words)
 {

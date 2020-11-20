@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../task_master.h"
+#include "task_master.h"
 
 static char		**name_and_path(char *path)
 {

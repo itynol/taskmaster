@@ -11,13 +11,15 @@
 /* ************************************************************************** */
 
 # define EX
-#include "../../task_master.h"
+#include "task_master.h"
 
 void		config_reader(char **av, char **env)
 {
 	int		fd;
 	char	*buf;
+	int g;
 
+	g = 0;
 	list = NULL;
 	buf = NULL;
 	if ((fd = open(av[1], O_RDONLY)) < 0)
