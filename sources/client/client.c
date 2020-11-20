@@ -28,20 +28,23 @@ int			msgHendler(char *msg)
 
 int main()
 {
-	int				fds;
+	int				fds, i;
 	struct sockaddr	sockAddress;
-	char			*pathToSocket = "./lol";
-	char			*msg;
+	char			*pathToSocket = SOCKET_ADDRESS;
+	char			*msg, *rawMsg;
 	char			buf[1024];
-	int				i;
 
     i = -1;
     sockAddress.sa_family = AF_UNIX;
-    while (pathToSocket[++i])
+    while (pathToSocket[++i]) {
         sockAddress.sa_data[i] = pathToSocket[i];
+    }
+    sockAddress.sa_data[i] = '\0';
 	while (1)
 	{
-		msg = readline(">");
+		rawMsg = readline(">");
+		msg = ft_strtrim(rawMsg);
+		free(rawMsg);
 		i = msgHendler(msg);
 		if (i < 0)
 			break ;
@@ -49,16 +52,16 @@ int main()
 		{
 			fds = socket(AF_UNIX, SOCK_STREAM, 0);
 			connect(fds, &sockAddress, 8);
-			if (send(fds, msg, 8, 0) < 0)
-				write(1, "server error\n", 13);
-			recv(fds, buf, 1024, 0);	
+			if ((i = send(fds, msg, 8, 0)) < 0)
+			    printf("server error - code: %d\n", i);
+			recv(fds, buf, 1024, 0);
 			printf ("%s", buf);
 			ft_bzero(buf, 1024);
-			free(msg);
 		}
 		else if (i != 2)
 			write(1, "command not found\n", 18);
-	}
+        free(msg);
+    }
 	free(msg);
 	close(fds);
 	return (0);

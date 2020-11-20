@@ -26,6 +26,7 @@
 #include <string.h>
 
 # define BUFF_SIZE 1
+# define SOCKET_ADDRESS "tm_s"
 
 typedef struct		s_pars
 {
