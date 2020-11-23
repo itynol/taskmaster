@@ -23,7 +23,7 @@ static int			execut(char *path, char **env)
 	return (i);
 }
 
-void		start(char **env, t_pars *list_start)
+void		start(t_pars *list_start)
 {
 //	int		fd_op;
 
@@ -36,7 +36,7 @@ void		start(char **env, t_pars *list_start)
 			list_start->PID = fork();
 			if (list_start->PID == 0)
 			{
-				if (execut(list_start->path, env) < 0)
+				if (execut(list_start->path, list_start->env) < 0)
 				{
 					list_start->status = -3;
 					exit(0);

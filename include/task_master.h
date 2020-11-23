@@ -24,9 +24,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include "jobs_status.h"
 
 # define BUFF_SIZE 1
 # define SOCKET_ADDRESS "tm_s"
+# define MSG_BUFF 64
 
 typedef struct		s_pars
 {
@@ -53,8 +55,13 @@ typedef struct		s_pars
 EX t_pars *list;
 
 int			ft_server_listner();
-void		start(char **env, t_pars *list_start);
-void		parser_mth(int fd, char *buf);
-int			help_hendler();
+void		start(t_pars *list_start);
+void		parser_mth(int fd, char *buf, char **env);
+int			help_handler();
+void        arrayCharCleaner(char **arr);
+t_pars      *jobFinderByName(char *name);
+int			isFileExist(char *path);
+char		*statusCommand(t_pars *listm);
+char        *stopCommand(char **command);
 
 #endif

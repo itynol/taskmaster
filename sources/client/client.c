@@ -6,8 +6,13 @@
 #include <readline/readline.h>
 #include "task_master.h"
 
-int			msgHendler(char *msg)
+int			msgHandler(char *rawMsg)
 {
+    char **msgArr;
+    char *msg;
+
+    msgArr = ft_strsplit(rawMsg, ' ');
+    msg = msgArr[0];
 	if (ft_strcmp(msg, "exit") == 0)
 		return (-1);
 	else if (!(ft_strcmp(msg, "status")) ||
@@ -20,7 +25,7 @@ int			msgHendler(char *msg)
 			!(ft_strcmp(msg, "shutdown")))
 		return(1);
 	else if (!(ft_strcmp(msg, "help")))
-		return (help_hendler());
+		return (help_handler());
 	else
 		return(0);
 
@@ -43,16 +48,18 @@ int main()
 	while (1)
 	{
 		rawMsg = readline(">");
+		if (ft_strlen(rawMsg) == 0)
+            continue;
 		msg = ft_strtrim(rawMsg);
 		free(rawMsg);
-		i = msgHendler(msg);
+		i = msgHandler(msg);
 		if (i < 0)
 			break ;
 		else if (i == 1)
 		{
 			fds = socket(AF_UNIX, SOCK_STREAM, 0);
-			connect(fds, &sockAddress, 8);
-			if ((i = send(fds, msg, 8, 0)) < 0)
+			connect(fds, &sockAddress, MSG_BUFF);
+			if ((i = send(fds, msg, MSG_BUFF, 0)) < 0)
 			    printf("server error - code: %d\n", i);
 			recv(fds, buf, 1024, 0);
 			printf ("%s", buf);

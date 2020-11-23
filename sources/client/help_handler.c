@@ -12,7 +12,7 @@
 
 #include "task_master.h"
 
-int					help_hendler()
+int					help_handler()
 {
 	ft_putstr("\ndefault commands:\n=========================\n");
 	ft_putstr("start\texit\tadd\nstop\tshutdown\tremove");
