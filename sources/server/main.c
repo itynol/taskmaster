@@ -13,7 +13,7 @@
 # define EX
 #include "task_master.h"
 
-void		config_reader(char **av, char **env)
+static void		config_reader(char **av, char **env)
 {
 	int		fd;
 	char	*buf;
@@ -31,14 +31,12 @@ void		config_reader(char **av, char **env)
 	{
 		//looking for '[' element
 		if (*buf != '#' && *buf != ' ' && *buf && *buf == '[')
-			parser_mth(fd, ft_strdup(buf));
+			parser_mth(fd, ft_strdup(buf), env);
 		free(buf);
 	}
-	start(env, list);
-	ft_server_listner();
 }
 
-void		signals(int signal)
+void		    signals(int signal)
 {
 	pid_t tmp;
 	int siglog;
@@ -61,15 +59,28 @@ void		signals(int signal)
     }
 }
 
-int		 main(int ac, char **av, char **env)
+void              init(char **av, char **env)
 {
-	signal(SIGCHLD, signals);
+    char *sockAdr;
+
+    sockAdr = SOCKET_ADDRESS;
+    signal(SIGCHLD, signals);
     signal(SIGQUIT, signals);
+    if (isFileExist(sockAdr) > 0) {
+        remove(sockAdr);
+    }
+    config_reader(av, env);
+    start(list);
+    ft_server_listner();
+}
+
+int		          main(int ac, char **av, char **env)
+{
     if (ac < 2)
 		write(1, "Please select conf file\n", 25);
 	else if (ac > 2)
 		write(1, "So many args\n", 14);
 	else
-		config_reader(av, env);
+		init(av, env);
 	return (0);
 }
