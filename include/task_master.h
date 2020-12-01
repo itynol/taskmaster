@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include <string.h>
 #include "jobs_status.h"
+#include <stdbool.h>
 
 # define BUFF_SIZE 1
 # define SOCKET_ADDRESS "tm_s"
@@ -33,6 +34,7 @@
 typedef struct		s_pars
 {
 	char			*name;
+	bool            launch_from_start;
 	char			*path;
 	int				number_of_process;
 	char			restart;
@@ -55,7 +57,7 @@ typedef struct		s_pars
 EX t_pars *list;
 
 int			ft_server_listner();
-void		start(t_pars *list_start);
+void		startAllJobs(t_pars *list_start);
 void		parser_mth(int fd, char *buf, char **env);
 int			help_handler();
 void        arrayCharCleaner(char **arr);
@@ -63,5 +65,8 @@ t_pars      *jobFinderByName(char *name);
 int			isFileExist(char *path);
 char		*statusCommand(t_pars *listm);
 char        *stopCommand(char **command);
+char        *restartCommand(char **command);
+char        *startCommand(char **command);
+int			execut(t_pars *list);
 
 #endif

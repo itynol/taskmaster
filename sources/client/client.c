@@ -59,10 +59,13 @@ int main()
 		{
 			fds = socket(AF_UNIX, SOCK_STREAM, 0);
 			connect(fds, &sockAddress, MSG_BUFF);
-			if ((i = send(fds, msg, MSG_BUFF, 0)) < 0)
-			    printf("server error - code: %d\n", i);
+			if ((i = send(fds, msg, MSG_BUFF, 0)) < 0) {
+                printf("server error - code: %d\n", i);
+                free(msg);
+                continue;
+            }
 			recv(fds, buf, 1024, 0);
-			printf ("%s", buf);
+			write(1, buf, ft_strlen(buf));
 			ft_bzero(buf, 1024);
 		}
 		else if (i != 2)

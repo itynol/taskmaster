@@ -12,18 +12,28 @@
 
 #include "task_master.h"
 
-static int			execut(char *path, char **env)
+int			execut(t_pars *list)
 {
-	char	**tmp;
+	char	**arrgs;
 	int		i;
-	
-	i = 0;
-	tmp = ft_strsplit(path, ' ');
-	i = execve(path, tmp, env);
-	return (i);
+
+    list->PID = fork();
+    if (list->PID == 0)
+    {
+        i = 0;
+        //TODO not fd hardcode like a shit
+        tcsetpgrp(10, list->PID);
+        arrgs = ft_strsplit(list->path, ' ');
+        i = execve(list->path, arrgs, list->env);
+        if (i < 0)
+            exit(ERR_CANT_OPEN_FILE);
+        else
+            exit(i);
+    }
+    return 0;
 }
 
-void		start(t_pars *list_start)
+void		startAllJobs(t_pars *list_start)
 {
 //	int		fd_op;
 
@@ -31,18 +41,8 @@ void		start(t_pars *list_start)
 //	dup2(fd_op, 1);
 	while(list_start)
 	{
-		if (list_start->status == 1)
-		{
-			list_start->PID = fork();
-			if (list_start->PID == 0)
-			{
-				if (execut(list_start->path, list_start->env) < 0)
-				{
-					list_start->status = -3;
-					exit(0);
-				}
-			}
-		}
+		if (list_start->status == STAT_WORK)
+		    execut(list_start);
 		list_start = list_start->next;
 	}
 }
