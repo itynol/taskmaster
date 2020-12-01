@@ -46,7 +46,7 @@ int			isFileExist(char *path)
     if (!(dirent = opendir(tmp[0])))
     {
         arrayCharCleaner(tmp);
-        return(-1);
+        return(ERR_CANT_OPEN_DIR);
     }
     while((entry = readdir(dirent)))
     {
@@ -54,10 +54,10 @@ int			isFileExist(char *path)
         {
             arrayCharCleaner(tmp);
             closedir(dirent);
-            return(1);
+            return(STAT_WORK);
         }
     }
     closedir(dirent);
     arrayCharCleaner(tmp);
-    return (-2);
+    return (ERR_NOT_FOUND);
 }

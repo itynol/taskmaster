@@ -4,6 +4,27 @@
 
 #include "task_master.h"
 
+char        *restartCommand(char **command) {
+    t_pars *localJob;
+
+    localJob = jobFinderByName(command[1]);
+    kill(localJob->PID, SIGTERM);
+    execut(localJob);
+    return ft_strdup("job restarted\n");
+}
+
+char        *startCommand(char **command) {
+    t_pars *localJob;
+
+    localJob = jobFinderByName(command[1]);
+    if (localJob->status != 0) {
+        kill(localJob->PID, SIGCONT);
+        return ft_strdup("started\n");
+    } else {
+        execut(localJob);
+    }
+    return ft_strdup("job already work\n");
+}
 
 char        *stopCommand(char **command) {
     t_pars *localJob;
@@ -23,7 +44,7 @@ char		*statusCommand(t_pars *listm)
         msg = ft_strnew(0);
     while(listm)
     {
-        tmpMsg = ft_strrejoin(listm->name, ft_itoa(listm->PID), 2);
+        tmpMsg = ft_strrejoin(listm->name, ft_strrejoin("\t\t", ft_itoa(listm->PID), 2), 2);
         switch (listm->status) {
             case STAT_WORK:  // online monitor
                 tmpMsg = ft_strrejoin(tmpMsg, "\t\tWORK\n", 1);

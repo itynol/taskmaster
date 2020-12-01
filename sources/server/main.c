@@ -46,7 +46,8 @@ void		    signals(int signal)
     {
         first = list;
 		tmp = wait(&siglog);
-		while(tmp != list->PID && list)
+        printf("PID %d - SIG %d\n", tmp, siglog);
+        while(tmp != list->PID && list)
 			list = list->next;
 		if (list->PID == tmp)
 			list->status = (short int)siglog;
@@ -70,7 +71,7 @@ void              init(char **av, char **env)
         remove(sockAdr);
     }
     config_reader(av, env);
-    start(list);
+    startAllJobs(list);
     ft_server_listner();
 }
 

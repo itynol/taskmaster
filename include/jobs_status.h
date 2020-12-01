@@ -5,11 +5,11 @@
 #ifndef TASKMASTER_JOBS_STATUS_H
 # define TASKMASTER_JOBS_STATUS_H
 
-# define STAT_WORK 1
 # define STAT_END  0
-# define ERR_CANT_OPEN_DIR -1
-# define ERR_NOT_FOUND -2
-# define ERR_CANT_OPEN_FILE -3
+# define STAT_WORK 1
+# define ERR_CANT_OPEN_DIR 2
+# define ERR_NOT_FOUND 3
+# define ERR_CANT_OPEN_FILE 5
 
 
 #endif //TASKMASTER_JOBS_STATUS_H

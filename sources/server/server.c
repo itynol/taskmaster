@@ -10,6 +10,8 @@ static void	handler(int sock, char *buf, int fds)
     if (ft_strcmp(rawMsg[0], "status") == 0)
         msg = statusCommand(list);
     else if (ft_strcmp(rawMsg[0], "shutdown") == 0) {
+        msg = "Bye! See you soon\n";
+        send(sock, msg, ft_strlen(msg)+1, 0);
         arrayCharCleaner(rawMsg);
         close(fds);
         remove(SOCKET_ADDRESS);
@@ -17,10 +19,15 @@ static void	handler(int sock, char *buf, int fds)
     }
     else if (ft_strcmp(rawMsg[0], "stop") == 0)
         msg = stopCommand(rawMsg);
+    else if (ft_strcmp(rawMsg[0], "start") == 0)
+        msg = startCommand(rawMsg);
+    else if (ft_strcmp(rawMsg[0], "restart") == 0)
+        msg = restartCommand(rawMsg);
     else
         msg = ft_strdup("So young\n");
     arrayCharCleaner(rawMsg);
-    send(sock, msg, ft_strlen(msg), 0);
+    msg[ft_strlen(msg)] = '\0';
+    send(sock, msg, ft_strlen(msg)+1, 0);
 	free(msg);
 }
 
