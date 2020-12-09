@@ -41,6 +41,7 @@ int				str_compare(t_string str1, t_string str2);
 
 t_string		*str_split(t_string str, int (*isdelim)(int));
 
+t_string		*str_addback_char(t_string *str, const char);
 t_string		*str_addback(t_string *str, const char *s, size_t size);
 t_string		*str_addfront(t_string *str, const char *s, size_t size);
 void			str_remove(t_string *str, int from, int n);
