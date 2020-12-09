@@ -28,7 +28,7 @@ CLN_DIR=client
 LIBFT_DIR=libft
 LIBFT_A=$(LIBFT_DIR)/libft.a
 
-SRCS_SRV = main.c server.c start.c parser.c helpers.c job_manager.c command_handlers.c
+SRCS_SRV = main.c server.c start.c parser.c helpers.c job_manager.c command_handlers.c lexer.c
 SRCS_CLN = client.c help_handler.c
 
 SOURCES_S=$(addprefix $(SRV_DIR)/, $(SRCS_SRV))
