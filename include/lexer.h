@@ -9,6 +9,7 @@ typedef enum	s_type {
 	SEMICOLON,
 	ROUND_LEFT_BRACKET,
 	ROUND_RIGHT_BRACKET,
+	EQUAL,
 	NUMBER,
 	WORD
 }				t_type;

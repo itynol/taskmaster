@@ -35,6 +35,8 @@ t_lexem	*check_type_lexem(char *buf, int *i)
 		type = SEMICOLON;
 	else if (buf[*i] == '\t')
 		type = TAB;
+	else if (buf[*i] == '=')
+		type = EQUAL;
 	else
 		return (NULL);
 	(*i)++;
@@ -101,6 +103,8 @@ int		check_spec_symbol(char c) {
 		return 1;
 	else if (c == ';')
 		return 1;
+	else if (c == '=')
+		return 1;
 	return 0;
 }
 
@@ -122,13 +126,13 @@ void	lexer_handle_quote(char **buf, int *i, t_string *new_string, int fd)
 				ft_putendl_fd("Error: lexer quote", 2);
 				exit(-1);
 			}
+			*buf = current_buf;
 			str_addback_char(new_string, '\n');
 			continue ;
 		}
 		str_addback_char(new_string, current_buf[j]);
 		j++;
 	}
-	*buf = current_buf;
 	*i = j + 1;
 }
 
@@ -150,7 +154,7 @@ t_lexem	*check_word_lexem(char **buf, int *i, int fd)
 			break ;
 		if (current_buf[j] == '\'')
 			lexer_handle_quote(&current_buf, &j, &new_string, fd);
-		 if (current_buf[j] == '\\')
+		else if (current_buf[j] == '\\')
 			lexer_handle_back_slash(&current_buf, &j, &new_string, fd);
 		else
 		{
