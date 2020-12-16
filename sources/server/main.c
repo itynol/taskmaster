@@ -18,10 +18,8 @@ static void		config_reader(char **av, __attribute__((unused)) char **env)
 	t_lexem	*tmp;
 	t_lexem	*lexem;
 	int		fd;
-	char	*buf;
 
 	list = NULL;
-	buf = NULL;
 	if ((fd = open(av[1], O_RDONLY)) < 0)
 	{
 		write(1, "File ", 4);
@@ -37,7 +35,15 @@ static void		config_reader(char **av, __attribute__((unused)) char **env)
 			free(lexem->data);
 		tmp = lexem;
 		lexem = lexem->next;
+		free(tmp);
 	}
+}
+
+void            restart(t_pars *job) {
+    if (job->restart && job->how_match_restart > 0) {
+        execut(job);
+        job->how_match_restart -= 1;
+    }
 }
 
 void		    signals(int signal)
@@ -50,11 +56,11 @@ void		    signals(int signal)
     {
         first = list;
 		tmp = wait(&siglog);
-        printf("PID %d - SIG %d\n", tmp, siglog);
         while(tmp != list->PID && list)
 			list = list->next;
 		if (list->PID == tmp)
 			list->status = (short int)siglog;
+		restart(list);
 	    list = first;
 	} else if (signal == SIGQUIT)
     {

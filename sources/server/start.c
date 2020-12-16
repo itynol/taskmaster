@@ -12,6 +12,10 @@
 
 #include "task_master.h"
 
+mode_t mask_create(t_pars *job){
+    return umask()
+}
+
 int			execut(t_pars *list)
 {
 	char	**arrgs;
@@ -27,8 +31,7 @@ int			execut(t_pars *list)
         i = execve(list->path, arrgs, list->env);
         if (i < 0)
             exit(ERR_CANT_OPEN_FILE);
-        else
-            exit(i);
+        exit(i);
     }
     return 0;
 }
@@ -41,7 +44,7 @@ void		startAllJobs(t_pars *list_start)
 //	dup2(fd_op, 1);
 	while(list_start)
 	{
-		if (list_start->status == STAT_WORK)
+		if (list_start->status != ERR_CANT_OPEN_DIR && list_start->status != ERR_NOT_FOUND && list_start->launch_from_start)
 		    execut(list_start);
 		list_start = list_start->next;
 	}

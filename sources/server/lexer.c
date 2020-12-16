@@ -34,7 +34,7 @@ t_lexem	*check_type_lexem(char *buf, int *i)
 	else if (buf[*i] == ';')
 		type = SEMICOLON;
 	else if (buf[*i] == '\t')
-		type = TAB;
+		type = BAT;
 	else if (buf[*i] == '=')
 		type = EQUAL;
 	else

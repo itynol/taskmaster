@@ -4,7 +4,7 @@
 typedef enum	s_type {
 	LEFT_BRACKET,
 	RIGHT_BRACKET,
-	TAB,
+	BAT,
 	COLON,
 	SEMICOLON,
 	ROUND_LEFT_BRACKET,
