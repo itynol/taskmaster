@@ -13,8 +13,10 @@
 # define EX
 #include "task_master.h"
 
-static void		config_reader(char **av, char **env)
+static void		config_reader(char **av, __attribute__((unused)) char **env)
 {
+	t_lexem	*tmp;
+	t_lexem	*lexem;
 	int		fd;
 	char	*buf;
 
@@ -27,12 +29,14 @@ static void		config_reader(char **av, char **env)
 		write(1, " not found", 10);
 		return ;
 	}
-	while (get_next_line(fd, &buf))
+	lexem = lexer(fd);
+	list = parser(lexem);
+	while (lexem)
 	{
-		//looking for '[' element
-		if (*buf != '#' && *buf != ' ' && *buf && *buf == '[')
-			parser_mth(fd, ft_strdup(buf), env);
-		free(buf);
+		if (lexem->data)
+			free(lexem->data);
+		tmp = lexem;
+		lexem = lexem->next;
 	}
 }
 
