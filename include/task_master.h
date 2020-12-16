@@ -41,9 +41,9 @@ typedef struct		s_pars
 	int				number_of_process;
 	uint8_t			restart;
 	int				how_long;
-	int				hm_wait;
+	int				how_match_restart;
 	char			*signal;
-	int				grasefull;
+	int				grace_full_stop;
 	uint8_t			pipe;
 	char			**env;
 	char			*path_to_workdir;
@@ -51,7 +51,7 @@ typedef struct		s_pars
 	int				PID;
 	short int		status;		
 	struct s_pars	*next;
-}					t_pars;
+}			        t_pars;
 
 #ifndef EX
 # define EX extern

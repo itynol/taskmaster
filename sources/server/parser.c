@@ -2,11 +2,19 @@
 #include "task_master.h"
 #include <stdbool.h>
 
-static bool		parserHandleEnv(char ***env, t_lexem **lexem)
+t_pars  *default_job_creator()
+{
+    t_pars *data;
+    data = (t_pars*)ft_memalloc(sizeof(t_pars));
+    data->launch_from_start = true;
+    return data;
+}
+
+static bool		parserHandleEnv(__attribute__((unused)) char ***env, __attribute__((unused)) t_lexem **lexem)
 {
 	lexem = NULL;
 	env = NULL;
-	return true;	
+	return true;
 }
 
 static bool		parserHandleString(char **string, t_lexem **lexem)
@@ -63,12 +71,12 @@ static bool	parserHandleParams(t_lexem **lexem, char *name_arg, t_pars *data)
 		return (parserHandleNumber((int*)&data->restart, lexem));
 	else if (!ft_strcmp(name_arg, "how_long_running"))
 		return (parserHandleNumber(&data->how_long, lexem));
-	else if (!ft_strcmp(name_arg, "howmuch_restart"))
-		return (parserHandleNumber(&data->hm_wait, lexem));
+	else if (!ft_strcmp(name_arg, "how_match_restart"))
+		return (parserHandleNumber(&data->how_match_restart, lexem));
 	else if (!ft_strcmp(name_arg, "stop_signal"))
 		return (parserHandleString(&data->signal, lexem));
-	else if (!ft_strcmp(name_arg, "grasefull_stop"))
-		return (parserHandleNumber(&data->grasefull, lexem));
+	else if (!ft_strcmp(name_arg, "grace_full_stop"))
+		return (parserHandleNumber(&data->grace_full_stop, lexem));
 	else if (!ft_strcmp(name_arg, "pipe"))
 		return (parserHandleNumber((int*)&data->pipe, lexem));
 	else if (!ft_strcmp(name_arg, "env"))
@@ -76,7 +84,7 @@ static bool	parserHandleParams(t_lexem **lexem, char *name_arg, t_pars *data)
 	return (parserHandleParamsPart2(lexem, name_arg, data));
 }
 
-void	*parserErrorNameBlock(t_lexem *lexem, int a)
+void	*parserErrorNameBlock(__attribute__((unused)) t_lexem *lexem,__attribute__((unused)) int a)
 {
 	lexem = NULL;
 	a = 0;
@@ -87,7 +95,7 @@ static t_lexem	*parserCheckParams(t_lexem *lexem, t_pars *data)
 {
 	char		*name_arg;
 
-	if (!lexem || lexem->type != TAB)
+	if (!lexem || lexem->type != BAT)
 		return (lexem);
 	lexem = lexem->next;
 	if (!lexem || lexem->type != WORD)
@@ -122,7 +130,7 @@ t_pars	*parser(t_lexem *lexem)
 		return (parserErrorNameBlock(lexem, WORD));
 	if (!lexem->next || lexem->next->type != RIGHT_BRACKET)
 		return (parserErrorNameBlock(lexem, RIGHT_BRACKET));
-	data = (t_pars*)ft_memalloc(sizeof(t_pars));
+	data = default_job_creator();
 	data->name = (char*)lexem->data;
 	lexem->data = NULL;
 	lexem = lexem->next->next;
