@@ -21,6 +21,27 @@ static t_string	*create(t_string *str, const char *s, size_t size)
 	return (str);
 }
 
+t_string		*str_addback_char(t_string *str, const char c)
+{
+	char		buf[] = " ";
+
+	if (!str)
+		return str;
+	
+	buf[0] = c;
+	if (!str->alloc)
+		return (create(str, buf, 1));
+	if (str->len + 1 >= str->alloc)
+	{
+		if (!ft_realloc((void **)&str->s, str->len, str->alloc * 2))
+			exit(-1);
+		str->alloc = str->alloc * 2;
+	}
+	str->s[str->len] = c;
+	str->len++;
+	return (str);
+}
+
 t_string		*str_addback(t_string *str, const char *s, size_t size)
 {
 	size_t	newalloc;

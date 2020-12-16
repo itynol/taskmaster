@@ -26,6 +26,8 @@
 #include <string.h>
 #include "jobs_status.h"
 #include <stdbool.h>
+#include <stdint.h>
+#include "lexer.h"
 
 # define BUFF_SIZE 1
 # define SOCKET_ADDRESS "tm_s"
@@ -37,12 +39,12 @@ typedef struct		s_pars
 	bool            launch_from_start;
 	char			*path;
 	int				number_of_process;
-	char			restart;
+	uint8_t			restart;
 	int				how_long;
 	int				hm_wait;
 	char			*signal;
 	int				grasefull;
-	char			pipe;
+	uint8_t			pipe;
 	char			**env;
 	char			*path_to_workdir;
 	char			*umask;
@@ -68,5 +70,6 @@ char        *stopCommand(char **command);
 char        *restartCommand(char **command);
 char        *startCommand(char **command);
 int			execut(t_pars *list);
+t_pars		*parser(t_lexem *lexem);
 
 #endif
