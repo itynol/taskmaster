@@ -2,6 +2,33 @@
 #include "task_master.h"
 #include <stdbool.h>
 
+static bool	checkNumber(char *str)
+{
+	if (*str == '-' || *str == '+')
+		str++;
+	while (*str)
+	{
+		if (!ft_isdigit(*str))
+			return (false);
+		str++;
+	}
+	return (true);
+}
+
+void	parserPrintErrorAndExit(char *str, t_lexem *lexem)
+{
+	if (lexem)
+	{
+		ft_putstr_fd("parser: line ", 2);
+		ft_putnbr_fd(lexem->line, 2);
+		ft_putstr_fd(": ", 2);
+	}
+	else
+		ft_putstr_fd("parser: ", 2);
+	ft_putendl_fd(str, 2);
+	exit(-1);
+}
+
 t_pars  *default_job_creator()
 {
     t_pars *data;
@@ -10,85 +37,74 @@ t_pars  *default_job_creator()
     return data;
 }
 
-static bool		parserHandleEnv(__attribute__((unused)) char ***env, __attribute__((unused)) t_lexem **lexem)
+static void		parserHandleEnv(__attribute__((unused)) char ***env, __attribute__((unused)) t_lexem **lexem)
 {
-	lexem = NULL;
-	env = NULL;
-	return true;
+	
 }
 
-static bool		parserHandleString(char **string, t_lexem **lexem)
+static void		parserHandleString(char **string, t_lexem **lexem)
 {
-	if ((*lexem)->type == NUMBER)
-		*string = ft_itoa(*(int*)(*lexem)->data);
-	else
- 		*string = (char*)(*lexem)->data;
+	if ((*lexem)->type != WORD)
+		parserPrintErrorAndExit("expected number", (*lexem));
+ 	*string = (*lexem)->data;
 	(*lexem)->data = NULL;
 	*lexem = (*lexem)->next;
-	return true;
 }
 
-static bool 	parserHandleNumber(int *number, t_lexem **lexem)
+static void		parserHandleNumber(int *number, t_lexem **lexem)
 {
-	*number = *((int*)(*lexem)->data);
+	if ((*lexem)->type != WORD || checkNumber((*lexem)->data))
+		parserPrintErrorAndExit("expected number", *lexem);
+	*number = ft_atoi((*lexem)->data);
 	*lexem = (*lexem)->next;
-	return true;
 }
 
-static bool		parserHandleBool(bool *data, t_lexem **lexem)
+static void		parserHandleBool(bool *data, t_lexem **lexem)
 {
-	if (!ft_strcmp((char*)(*lexem)->data, "false"))
+	if (!ft_strcmp((*lexem)->data, "false"))
 		*data = false;
-	else if (!ft_strcmp((char*)(*lexem)->data, "true"))
+	else if (!ft_strcmp((*lexem)->data, "true"))
 		*data = true;
 	else
-		return false;
+		parserPrintErrorAndExit("expected boolean", *lexem);
 	*lexem = (*lexem)->next;
-	return true;
 }
 
-static bool	parserHandleParamsPart2(t_lexem **lexem, char *name_arg, t_pars *data)
+static void	parserHandleParamsPart2(t_lexem **lexem, char *name_arg, t_pars *data)
 {
 	if (!ft_strcmp(name_arg, "work_directory"))
-		return (parserHandleString(&data->path_to_workdir, lexem));
-	else if (!ft_strcmp(name_arg, "umask_for_programm"))
-		return (parserHandleString(&data->umask, lexem));
-	printf("%s not found\n", name_arg);
-	return false;
+		parserHandleString(&data->path_to_workdir, lexem);
+	else if (!ft_strcmp(name_arg, "umask_for_program"))
+		parserHandleString(&data->umask, lexem);
+	parserPrintErrorAndExit("argument not found", *lexem);
 }
 
-static bool	parserHandleParams(t_lexem **lexem, char *name_arg, t_pars *data)
+static void	parserHandleParams(t_lexem **lexem, char *name_arg, t_pars *data)
 {
 	if (!lexem)
-		return false;
+		return ;
 	if (!ft_strcmp(name_arg, "path"))
-		return (parserHandleString(&data->path, lexem));
+		parserHandleString(&data->path, lexem);
 	else if (!ft_strcmp(name_arg, "number_of_process"))
-		return (parserHandleNumber(&data->number_of_process, lexem));
+		parserHandleNumber(&data->number_of_process, lexem);
 	else if (!ft_strcmp(name_arg, "launch_from_start"))
-		return (parserHandleBool(&data->launch_from_start, lexem));
+		parserHandleBool(&data->launch_from_start, lexem);
 	else if (!ft_strcmp(name_arg, "restart"))
-		return (parserHandleNumber((int*)&data->restart, lexem));
+		parserHandleNumber((int*)&data->restart, lexem);
 	else if (!ft_strcmp(name_arg, "how_long_running"))
-		return (parserHandleNumber(&data->how_long, lexem));
+		parserHandleNumber(&data->how_long, lexem);
 	else if (!ft_strcmp(name_arg, "how_match_restart"))
-		return (parserHandleNumber(&data->how_match_restart, lexem));
+		parserHandleNumber(&data->how_match_restart, lexem);
 	else if (!ft_strcmp(name_arg, "stop_signal"))
-		return (parserHandleString(&data->signal, lexem));
+		parserHandleString(&data->signal, lexem);
 	else if (!ft_strcmp(name_arg, "grace_full_stop"))
-		return (parserHandleNumber(&data->grace_full_stop, lexem));
+		parserHandleNumber(&data->grace_full_stop, lexem);
 	else if (!ft_strcmp(name_arg, "pipe"))
-		return (parserHandleNumber((int*)&data->pipe, lexem));
+		parserHandleNumber((int*)&data->pipe, lexem);
 	else if (!ft_strcmp(name_arg, "env"))
-		return (parserHandleEnv(&data->env, lexem));
-	return (parserHandleParamsPart2(lexem, name_arg, data));
-}
-
-void	*parserErrorNameBlock(__attribute__((unused)) t_lexem *lexem,__attribute__((unused)) int a)
-{
-	lexem = NULL;
-	a = 0;
-	return NULL;
+		parserHandleEnv(&data->env, lexem);
+	else
+		parserHandleParamsPart2(lexem, name_arg, data);
 }
 
 static t_lexem	*parserCheckParams(t_lexem *lexem, t_pars *data)
@@ -99,43 +115,50 @@ static t_lexem	*parserCheckParams(t_lexem *lexem, t_pars *data)
 		return (lexem);
 	lexem = lexem->next;
 	if (!lexem || lexem->type != WORD)
-		return NULL; // handle error
-	name_arg = (char*)lexem->data;
+		parserPrintErrorAndExit("expected word", lexem);
+	name_arg = lexem->data;
 	lexem = lexem->next;
 	if (!lexem || lexem->type != EQUAL)
-		return NULL; //handle error
+		parserPrintErrorAndExit("expected =", lexem);
 	lexem = lexem->next;
-	if (!parserHandleParams(&lexem, name_arg, data))
-		return NULL; //handle error
+	parserHandleParams(&lexem, name_arg, data);
+	if (!lexem || lexem->type != SEMICOLON)
+		parserPrintErrorAndExit("expected ;", lexem);
+	lexem = lexem->next;
+	if (!lexem || lexem->type != NEWLINE)
+		parserPrintErrorAndExit("expected newline", lexem);
 	return (parserCheckParams(lexem->next, data));
 }
 
-// [ word : word ] \n
 t_pars	*parser(t_lexem *lexem)
 {
 	t_pars	*data;
 
 	if (!lexem)
 		return (NULL);
+	if (lexem->type == NEWLINE)
+		return (parser(lexem->next));
 	if (lexem->type != LEFT_BRACKET)
-		return (parserErrorNameBlock(lexem, LEFT_BRACKET));
+		parserPrintErrorAndExit("expected [", lexem);
 	lexem = lexem->next;
-	if (!lexem || lexem->type != WORD || ft_strcmp((char*)lexem->data, "programm"))
-		return (parserErrorNameBlock(lexem, WORD));
+	if (!lexem || lexem->type != WORD || ft_strcmp(lexem->data, "program"))
+		parserPrintErrorAndExit("expected program", lexem);
 	lexem = lexem->next;
 	if (!lexem || lexem->type != COLON)
-		return (parserErrorNameBlock(lexem, COLON));
+		parserPrintErrorAndExit("expected :", lexem);
 	lexem = lexem->next;
 	if (!lexem || lexem->type != WORD)
-		return (parserErrorNameBlock(lexem, WORD));
-	if (!lexem->next || lexem->next->type != RIGHT_BRACKET)
-		return (parserErrorNameBlock(lexem, RIGHT_BRACKET));
+		parserPrintErrorAndExit("expected word", lexem);
 	data = default_job_creator();
-	data->name = (char*)lexem->data;
+	data->name = lexem->data;
 	lexem->data = NULL;
+	if (!lexem->next || lexem->next->type != RIGHT_BRACKET)
+		parserPrintErrorAndExit("expected ]", lexem);
+	lexem = lexem->next;
+	if (!lexem->next || lexem->next->type != NEWLINE)
+		parserPrintErrorAndExit("expected newline", lexem);
 	lexem = lexem->next->next;
 	lexem = parserCheckParams(lexem, data);
-	if (lexem)
-		data->next = parser(lexem);
+	data->next = parser(lexem);
 	return (data);
 }
