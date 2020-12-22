@@ -27,7 +27,6 @@
 #include "jobs_status.h"
 #include <stdbool.h>
 #include <stdint.h>
-#include "lexer.h"
 
 # define BUFF_SIZE 1
 # define SOCKET_ADDRESS "tm_s"
@@ -70,6 +69,5 @@ char        *stopCommand(char **command);
 char        *restartCommand(char **command);
 char        *startCommand(char **command);
 int			execut(t_pars *list);
-t_pars		*parser(t_lexem *lexem);
 
 #endif

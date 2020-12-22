@@ -13,7 +13,7 @@
 #include "task_master.h"
 
 mode_t mask_create(t_pars *job){
-    return umask()
+    return umask((mode_t)job->umask);
 }
 
 int			execut(t_pars *list)

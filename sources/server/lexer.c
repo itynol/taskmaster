@@ -2,7 +2,19 @@
 #include "lexer.h"
 #include "ft_string.h"
 
-void	push_back_lexem(t_lexem **begin, t_lexem **curr, t_lexem *new)
+const t_symbol	token_symbol[] = {
+	{LEFT_BRACKET, '[', NULL},
+	{RIGHT_BRACKET, ']', NULL},
+	{BAT, '\t', NULL},
+	{COLON, ':', NULL},
+	{SEMICOLON, ';', NULL},
+	{ROUND_LEFT_BRACKET, '(', NULL},
+	{ROUND_RIGHT_BRACKET, ')', NULL},
+	{EQUAL, '=', NULL},
+	{-1, 0, NULL}
+};
+
+void	lexemPushBack(t_lexem **begin, t_lexem **curr, t_lexem *new)
 {
 	if (!*begin)
 	{
@@ -16,62 +28,31 @@ void	push_back_lexem(t_lexem **begin, t_lexem **curr, t_lexem *new)
 	}
 }
 
-t_lexem	*check_type_lexem(char *buf, int *i)
+t_lexem	*check_type_lexem(char *buf, int *pointer_buf)
 {
-	t_lexem		*lexem;
-	int			type;
+	const t_symbol	*current_symbol;
+	t_lexem			*lexem;
+	int				type;
 
-	if (buf[*i] == '[')
-		type = LEFT_BRACKET;		
-	else if (buf[*i] == ']')
-		type = RIGHT_BRACKET;
-	else if (buf[*i] == ':')
-		type = COLON;
-	else if (buf[*i] == '(')
-		type = ROUND_LEFT_BRACKET;
-	else if (buf[*i] == ')')
-		type = ROUND_RIGHT_BRACKET;
-	else if (buf[*i] == ';')
-		type = SEMICOLON;
-	else if (buf[*i] == '\t')
-		type = BAT;
-	else if (buf[*i] == '=')
-		type = EQUAL;
-	else
+	type = -1;
+	current_symbol = (const t_symbol*)&token_symbol[0];
+	while (current_symbol->type != -1)
+	{
+		if (current_symbol->symbol == buf[*pointer_buf])
+		{
+			type = current_symbol->type;
+			break ;
+		}
+		current_symbol++;
+	}
+	if (type == -1)
 		return (NULL);
-	(*i)++;
+	(*pointer_buf)++;
 	lexem = (t_lexem*)ft_memalloc(sizeof(t_lexem));
 	lexem->type = type;
 	return (lexem);
 }
 
-int		check_spec_symbol(char c);
-
-t_lexem *check_number_lexem(char *buf, int *i)
-{
-	t_lexem	*lexem;
-	int		j;
-	int		number;
-
-	j = *i;
-	if (buf[j] == '+' || buf[j] == '-')
-		j++;
-	while (buf[j])
-	{
-		if (check_spec_symbol(buf[j]) || ft_isspace(buf[j]))
-			break ;
-		else if (!ft_isdigit(buf[j]))
-			return (NULL);
-		j++;
-	}
-	lexem = (t_lexem*)ft_memalloc(sizeof(t_lexem));
-	number = ft_atoi(&buf[*i]);
-	lexem->type = NUMBER;
-	lexem->data = (void*)ft_memalloc(sizeof(int));
-	ft_memcpy(lexem->data, (void*)&number, sizeof(int)); //maybe ft_atoll?
-	*i = j;
-	return (lexem);
-}
 
 void	lexer_handle_back_slash(char **buf, int *i, t_string *new_word, int fd)
 {
@@ -90,22 +71,17 @@ void	lexer_handle_back_slash(char **buf, int *i, t_string *new_word, int fd)
 	}
 }
 
-int		check_spec_symbol(char c) {
-	if (c == '[')
-		return 1;
-	else if (c == ']')
-		return 1;
-	else if (c == '(')
-		return 1;
-	else if (c == ')')
-		return 1;
-	else if (c == ':')
-		return 1;
-	else if (c == ';')
-		return 1;
-	else if (c == '=')
-		return 1;
-	return 0;
+int		checkReservedSymbol(char c) {
+	const t_symbol	*current_symbol;
+
+	current_symbol = (const t_symbol*)&token_symbol[0];
+	while (current_symbol->type != -1)
+	{
+		if (current_symbol->symbol == c)
+			return (1);
+		current_symbol++;
+	}
+	return (0);
 }
 
 void	lexer_handle_quote(char **buf, int *i, t_string *new_string, int fd)
@@ -150,7 +126,7 @@ t_lexem	*check_word_lexem(char **buf, int *i, int fd)
 	lexem->type = WORD;
 	while (current_buf[j])
 	{
-		if (check_spec_symbol(current_buf[j]) || ft_isspace(current_buf[j]))
+		if (checkReservedSymbol(current_buf[j]) || ft_isspace(current_buf[j]) || current_buf[j] == '#')
 			break ;
 		if (current_buf[j] == '\'')
 			lexer_handle_quote(&current_buf, &j, &new_string, fd);
@@ -166,6 +142,15 @@ t_lexem	*check_word_lexem(char **buf, int *i, int fd)
 	*buf = current_buf;
 	*i = j;
 	return lexem;
+}
+
+static void	lexerAddNewlineLexem(t_lexem **begin, t_lexem **curr)
+{
+	t_lexem	*tmp;
+
+	tmp = (t_lexem*)ft_memalloc(sizeof(t_lexem));
+	tmp->type = NEWLINE;
+	lexemPushBack(begin, curr, tmp);
 }
 
 t_lexem	*lexer(int fd)
@@ -185,16 +170,18 @@ t_lexem	*lexer(int fd)
 		{
 			if (buf[i] != '\t' && ft_isspace(buf[i]))
 				i++;
+			else if (buf[i] == '#')
+				break ;
 			else if ((new = check_type_lexem(buf, &i))
-					|| (new = check_number_lexem(buf, &i))
 					|| (new = check_word_lexem(&buf, &i, fd)))
-				push_back_lexem(&begin, &curr, new);
+				lexemPushBack(&begin, &curr, new);
 			else
 			{
 				ft_putstr_fd("taskmaster: error lexer\n", 2);
 				exit(-1);
 			}
 		}
+		lexerAddNewlineLexem(&begin, &curr);
 		free(buf);
 	}
 	return (begin);

@@ -12,6 +12,9 @@
 
 # define EX
 #include "task_master.h"
+#include "lexer.h"
+
+t_pars	*parser(t_lexem *lexem);
 
 static void		config_reader(char **av, __attribute__((unused)) char **env)
 {
